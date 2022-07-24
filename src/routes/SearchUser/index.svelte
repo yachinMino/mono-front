@@ -1,28 +1,60 @@
-<script lang="ts">
-	let users = [
-		{ id: '1', name: 'test-user1' },
-		{ id: '2', name: 'test-user2' }
-	];
-
-	let inputUserId: number | string = '';
-	let inputUserName: string = '';
-
-	//bindした検索条件が更新されるたびにURLも併せてリアクティブになる。（便利すぎ）
-	$: url = `http://localhost:3000/users?id=${inputUserId}`;
-
-	async function getUserInfo() {
-		console.log(url);
-		fetch(url)
+<script lang="ts" context="module">
+	//画面ロード時の処理はこちらに記述する。
+	/** @type {import('./__types/[slug]').Load} */
+	export async function load() {
+		let url = 'http://localhost:3000/users/';
+		let initial;
+		await fetch(url)
 			.then((response) => {
-				return response.json(); //ここでBodyからJSONを返す
+				return response.text(); //ここでBodyからJSONを返す
 			})
 			.then((result) => {
-				users = result; //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
+				initial = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
+				console.log(initial);
 			})
 			.catch((e) => {
 				console.log(e); //エラーをキャッチし表示
-				users = [];
 			});
+
+		return {
+			props: {
+				users: initial
+			}
+		};
+	}
+</script>
+
+<script lang="ts">
+	import { escape } from 'svelte/internal';
+
+	export let users: [{ id: number | string; name: string }] = [{ id: '', name: '' }];
+	let inputUserId: number | string = '';
+	let inputUserName: string = '';
+
+	//検索時に必要なだけなのでreactiveしない
+	let url = 'http://localhost:3000/users/?';
+
+	async function getUserInfo() {
+		//検索条件
+		if (inputUserId !== '') {
+			url = url + `id=${inputUserId}`;
+		}
+		if (inputUserName !== '') {
+			url = url + `&name=${inputUserName}`;
+		}
+
+		fetch(url)
+			.then((response) => {
+				return response.text(); //ここでBodyからJSONを返す
+			})
+			.then((result) => {
+				users = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
+			})
+			.catch((e) => {
+				console.log(e); //エラーをキャッチし表示
+			});
+
+		url = 'http://localhost:3000/users/?';
 	}
 </script>
 
@@ -32,7 +64,7 @@
 
 <div class="searching-option">
 	<input type="text" placeholder="ユーザーID" bind:value={inputUserId} />
-	<input type="text" placeholder="ユーザー名（あいまい検索）" bind:value={inputUserName} />
+	<input type="text" placeholder="ユーザー名" bind:value={inputUserName} />
 	<button on:click={() => getUserInfo()}>検索</button>
 </div>
 
@@ -41,19 +73,19 @@
 </div>
 
 <div class="searching-result">
-	{#if users.length === 0}
-		<p>検索結果が0件です。</p>
-	{:else}
+	{#if users}
 		{#each users as user}
-			<div class="user-info">
+			<a href="/UserDetail" class="user-info">
 				<p>
 					ユーザーID {user.id}
 				</p>
 				<p>
 					ユーザー名 {user.name}
 				</p>
-			</div>
+			</a>
 		{/each}
+	{:else}
+		<p>loading</p>
 	{/if}
 </div>
 
@@ -65,9 +97,8 @@
 
 	.user-info {
 		margin: 8px;
-		border-style: solid;
-		border: 1px;
-		border-color: black;
+		padding: 8px;
+		border-radius: 8px;
 		background-color: aqua;
 	}
 </style>
