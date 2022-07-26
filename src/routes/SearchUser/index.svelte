@@ -10,7 +10,6 @@
 			})
 			.then((result) => {
 				initial = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
-				console.log(initial);
 			})
 			.catch((e) => {
 				console.log(e); //エラーをキャッチし表示
@@ -75,7 +74,7 @@
 <div class="searching-result">
 	{#if users}
 		{#each users as user}
-			<a href="/UserDetail" class="user-info">
+			<a href={`/UserDetail/?id=${user.id}`} class="user-info">
 				<p>
 					ユーザーID {user.id}
 				</p>
@@ -100,5 +99,7 @@
 		padding: 8px;
 		border-radius: 8px;
 		background-color: aqua;
+		text-decoration: none;
+		color: black;
 	}
 </style>
