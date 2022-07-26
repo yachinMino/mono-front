@@ -25,19 +25,20 @@
 </script>
 
 <script lang="ts">
-	export let userInfo: [{ id: number; name: string }];
+	//一行しか返ってこないので配列にしなくてOK
+	export let userInfo: { id: number | string; name: string } = { id: '', name: 'test' };
 	let updateUserName: string = '';
 
-	export function putUserName() {
-		userInfo[0].name = updateUserName;
+	function putUserName() {
+		userInfo.name = updateUserName;
 		console.log(userInfo);
-		fetch(`http://localhost:3000/users/1`, {
+		fetch(`http://localhost:3000/users/${userInfo.id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(userInfo[0])
-			})
+			body: JSON.stringify(userInfo)
+		})
 			.then((response) => response.json())
 			.then((data) => {
 				console.log('Success:', data);
@@ -51,8 +52,8 @@
 <h1>ユーザー情報詳細</h1>
 
 <div class="user-info-detail">
-	<p>ユーザーID {userInfo[0].id}</p>
-	<p>ユーザー名 {userInfo[0].name}</p>
+	<p>ユーザーID {userInfo.id}</p>
+	<p>ユーザー名 {userInfo.name}</p>
 </div>
 
 <div class="user-info-update">
