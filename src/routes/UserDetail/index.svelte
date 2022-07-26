@@ -10,7 +10,7 @@
 				return response.text(); //ここでBodyからJSONを返す
 			})
 			.then((result) => {
-				initial = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
+				initial = JSON.parse(result); //取得したJSONデータを渡す
 			})
 			.catch((e) => {
 				console.log(e); //エラーをキャッチし表示
@@ -37,7 +37,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(userInfo[0])
-		})
+			})
 			.then((response) => response.json())
 			.then((data) => {
 				console.log('Success:', data);
