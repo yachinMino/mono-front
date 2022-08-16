@@ -1,38 +1,29 @@
 <script lang="ts" context="module">
-	//画面ロード時の処理はこちらに記述する。
+	import * as api from '../../scripts/api_client.svelte';
 	export async function load({ url }: { url: any }) {
 		const queries = url.searchParams;
 		const id = queries.has('id') ? queries.get('id') : '';
-		const getUrl = `http://localhost:3000/users/${id}`;
-		let initial;
-		await fetch(getUrl)
-			.then((response) => {
-				return response.text(); //ここでBodyからJSONを返す
-			})
-			.then((result) => {
-				initial = JSON.parse(result); //取得したJSONデータを渡す
-			})
-			.catch((e) => {
-				console.log(e); //エラーをキャッチし表示
-			});
+		const getUrl = `${api.BASE_HOST}/users/findById/${id}`;
+
+		const response = await fetch(getUrl);
 
 		return {
+			status: response.status,
 			props: {
-				userInfo: initial
+				responseUserInfo: response.ok && (await response.json())
 			}
 		};
 	}
 </script>
 
 <script lang="ts">
-	//一行しか返ってこないので配列にしなくてOK
-	export let userInfo: { id: number | string; name: string } = { id: '', name: 'test' };
+	export let responseUserInfo: [{ id: number | string; name: string }] = [{ id: '', name: '' }];
+	let userInfo = responseUserInfo[0];
 	let updateUserName: string = '';
 
 	function putUserName() {
 		userInfo.name = updateUserName;
-		console.log(userInfo);
-		fetch(`http://localhost:3000/users/${userInfo.id}`, {
+		fetch(`${api.BASE_HOST}/users/`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
@@ -46,6 +37,16 @@
 			.catch((error) => {
 				console.error('Error:', error);
 			});
+	}
+
+	function deleteUserName() {
+		fetch(`${api.BASE_HOST}/users/`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(userInfo)
+		});
 	}
 </script>
 
@@ -62,4 +63,5 @@
 
 <div class="action-button">
 	<button on:click={() => putUserName()}>ユーザ情報更新</button>
+	<a href="/SearchUser/"><button on:click={() => deleteUserName()}>ユーザ情報削除</button></a>
 </div>

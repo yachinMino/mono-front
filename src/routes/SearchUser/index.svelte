@@ -1,59 +1,46 @@
 <script lang="ts" context="module">
+	import * as api from '../../scripts/api_client.svelte';
 	//画面ロード時の処理はこちらに記述する。
-	/** @type {import('./__types/[slug]').Load} */
+	/** @type {import('./__types/SearchUser').Load} */
 	export async function load() {
-		let url = 'http://localhost:3000/users/';
-		let initial;
-		await fetch(url)
-			.then((response) => {
-				return response.text(); //ここでBodyからJSONを返す
-			})
-			.then((result) => {
-				initial = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
-			})
-			.catch((e) => {
-				console.log(e); //エラーをキャッチし表示
-			});
+		const url = `${api.BASE_HOST}/users/`;
+		const response = await fetch(url);
 
 		return {
+			status: response.status,
 			props: {
-				users: initial
+				users: response.ok && (await response.json())
 			}
 		};
 	}
 </script>
 
 <script lang="ts">
-	import { escape } from 'svelte/internal';
-
 	export let users: [{ id: number | string; name: string }] = [{ id: '', name: '' }];
 	let inputUserId: number | string = '';
 	let inputUserName: string = '';
-
-	//検索時に必要なだけなのでreactiveしない
-	let url = 'http://localhost:3000/users/?';
+	let searchOption = '';
 
 	async function getUserInfo() {
 		//検索条件
-		if (inputUserId !== '') {
-			url = url + `id=${inputUserId}`;
-		}
-		if (inputUserName !== '') {
-			url = url + `&name=${inputUserName}`;
+		if (inputUserId !== '' && inputUserName !== '') {
+			searchOption = `/${inputUserId}/${inputUserName}`;
+		} else {
+			if (inputUserId !== '') {
+				searchOption = searchOption + `/findById/${inputUserId}`;
+			}
+			if (inputUserName !== '') {
+				searchOption = searchOption + `/findByName/${inputUserName}`;
+			}
 		}
 
-		fetch(url)
-			.then((response) => {
-				return response.text(); //ここでBodyからJSONを返す
-			})
-			.then((result) => {
-				users = JSON.parse(result); //取得したJSONデータを渡す（配列で返ってくるので配列にしなくてOK）
-			})
-			.catch((e) => {
-				console.log(e); //エラーをキャッチし表示
-			});
-
-		url = 'http://localhost:3000/users/?';
+		const url = `${api.BASE_HOST}/users${searchOption}`;
+		console.log(url);
+		const response = await fetch(url);
+		searchOption = '';
+		if (response.ok) {
+			users = await response.json();
+		}
 	}
 </script>
 

@@ -1,24 +1,18 @@
 <script lang="ts">
+	import * as api from '../../scripts/api_client.svelte';
+
 	let userId: number | string;
 	let userName: string;
 
 	$: userInfo = { id: userId, name: userName };
 	function postUser() {
-		// const userInfo:[{id:Number,name:String}] = [];
-		fetch(`http://localhost:3000/users/`, {
+		fetch(`${api.BASE_HOST}/users/`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(userInfo)
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log('Success:', data);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			});
+		});
 
 		userId = '';
 		userName = '';
