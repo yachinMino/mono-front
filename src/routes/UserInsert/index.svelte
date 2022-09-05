@@ -21,11 +21,11 @@
 
 <div class="user-insert-form">
 	<p>ユーザーID</p>
-	<input type="text" placeholder="ユーザーID" bind:value={userId} />
+	<input type="text" placeholder="ユーザーID" bind:value={userId} name="user-id" />
 	<p>ユーザー名</p>
-	<input type="text" placeholder="ユーザー名" bind:value={userName} />
+	<input type="text" placeholder="ユーザー名" bind:value={userName} name="user-name" />
 </div>
 
 <div class="action-button">
-	<button on:click={() => postUser()}>登録</button>
+	<button on:click={() => postUser()} name="do-insert-button">登録</button>
 </div>

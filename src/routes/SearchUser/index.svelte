@@ -49,9 +49,9 @@
 </div>
 
 <div class="searching-option">
-	<input type="text" placeholder="ユーザーID" bind:value={inputUserId} />
-	<input type="text" placeholder="ユーザー名" bind:value={inputUserName} />
-	<button on:click={() => getUserInfo()}>検索</button>
+	<input type="text" placeholder="ユーザーID" bind:value={inputUserId} name="search-user-id" />
+	<input type="text" placeholder="ユーザー名" bind:value={inputUserName} name="search-user-name" />
+	<button on:click={() => getUserInfo()} name="do-search-button">検索</button>
 </div>
 
 <div class="searching-result-header">
@@ -61,7 +61,7 @@
 <div class="searching-result">
 	{#if users}
 		{#each users as user}
-			<a href={`/UserDetail/?id=${user.id}`} class="user-info">
+			<a href={`/UserDetail/?id=${user.id}`} class="user-info" name={`user-info-${user.id}`}>
 				<p>
 					ユーザーID {user.id}
 				</p>

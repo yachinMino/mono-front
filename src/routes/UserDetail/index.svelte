@@ -58,10 +58,17 @@
 </div>
 
 <div class="user-info-update">
-	<input type="text" placeholder="変更後のユーザー名" bind:value={updateUserName} />
+	<input
+		type="text"
+		placeholder="変更後のユーザー名"
+		bind:value={updateUserName}
+		name="modify-user-name"
+	/>
 </div>
 
 <div class="action-button">
-	<button on:click={() => putUserName()}>ユーザ情報更新</button>
-	<a href="/SearchUser/"><button on:click={() => deleteUserName()}>ユーザ情報削除</button></a>
+	<button on:click={() => putUserName()} name="do-modify-button">ユーザ情報更新</button>
+	<a href="/SearchUser/"
+		><button on:click={() => deleteUserName()} name="do-delete-button">ユーザ情報削除</button></a
+	>
 </div>

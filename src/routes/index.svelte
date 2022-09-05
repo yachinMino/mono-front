@@ -3,10 +3,7 @@
 
 <h1>Menu</h1>
 
-<div>
-	<a href="/SearchUser">ユーザー検索</a>
-</div>
-
-<div>
-	<p>ユーザー検索</p>
+<div class="main-menu">
+	<a href="/SearchUser" name="link-SearchUser">ユーザー検索</a>
+	<a href="/UserInsert" name="link-UserInsert">ユーザー登録</a>
 </div>
